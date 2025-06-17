@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIU Smart Resume Analyzer - Admin Login</title>
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <style>
+    /* Admin-specific styling */
+    .wrapper {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      border: 2px solid #4CAF50;
+      box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+    }
+
+    .admin-header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(76, 175, 80, 0.3);
+    }
+
+    .admin-header i {
+      font-size: 2.5em;
+      color: #4CAF50;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .admin-header h1 {
+      color: #4CAF50;
+      font-size: 1.8em;
+      margin: 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .admin-header p {
+      color: #b8c5d6;
+      font-size: 0.9em;
+      margin: 5px 0 0 0;
+    }
+
+    .error-message, .success-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 14px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .error-message {
+      background: rgba(244, 67, 54, 0.15);
+      border: 1px solid rgba(244, 67, 54, 0.4);
+      color: #f44336;
+    }
+
+    .success-message {
+      background: rgba(76, 175, 80, 0.15);
+      border: 1px solid rgba(76, 175, 80, 0.4);
+      color: #4CAF50;
+    }
+
+    .warning-message {
+      background: rgba(255, 193, 7, 0.15);
+      border: 1px solid rgba(255, 193, 7, 0.4);
+      color: #ffc107;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #4CAF50;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #4CAF50, #45a049);
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: linear-gradient(45deg, #45a049, #4CAF50);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn:disabled {
+      background: rgba(76, 175, 80, 0.6);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-to-login {
+      text-align: center;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .back-to-login a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.3s ease;
+    }
+
+    .back-to-login a:hover {
+      color: #4CAF50;
+      text-decoration: underline;
+    }
+
+    .input-box input:focus {
+      border-color: #4CAF50;
+      box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    }
+
+    .remember-forgot label {
+      color: #4CAF50;
+    }
+
+    .remember-forgot a {
+      color: #4CAF50;
+    }
+
+    .security-notice {
+      background: rgba(76, 175, 80, 0.1);
+      border: 1px solid rgba(76, 175, 80, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .security-notice i {
+      color: #4CAF50;
+      font-size: 1.2em;
+      margin-right: 8px;
+    }
+
+    .security-notice p {
+      color: #b8c5d6;
+      font-size: 13px;
+      margin: 5px 0 0 0;
+      line-height: 1.4;
+    }
+
+    .attempts-warning {
+      background: rgba(255, 152, 0, 0.15);
+      border: 1px solid rgba(255, 152, 0, 0.4);
+      color: #ff9800;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 13px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <img src="/static/logo.png" alt="logo" class="header-logo">
+    <h2>AIU Smart Resume Analyzer</h2>
+  </header>
+  
+  <div class="wrapper">
+    <div class="admin-header">
+      <i class='bx bxs-shield'></i>
+      <h1>Admin Portal</h1>
+    </div>
+    
+    <div class="form-container">
+      <div id="errorMessage" class="error-message"></div>
+      <div id="successMessage" class="success-message"></div>
+      
+      <form id="adminLoginForm">
+        <div class="input-group">
+          <label for="email">Admin Email</label>
+          <div class="input-box">
+            <i class='bx bxs-envelope'></i>
+            <input type="email" id="email" placeholder="Enter admin email" required>
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label for="password">Password</label>
+          <div class="input-box">
+            <i class='bx bxs-lock-alt'></i>
+            <input type="password" id="password" placeholder="Enter password" required>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn" id="loginBtn">Login</button>
+      </form>
+      
+      <div class="back-to-login">
+        <p><a href="/"><i class='bx bx-arrow-back'></i> Back to user login</a></p>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="site-footer">
+    <p>&copy; DEVELOPED BY SCHOOL OF COMPUTING AND INFORMATICS</p>
+  </footer>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBSBSkxJoya3yk4JA8wXp6BgF99GQJplrs",
+        authDomain: "resume-analyzer-d58fd.firebaseapp.com",
+        projectId: "resume-analyzer-d58fd",
+        storageBucket: "resume-analyzer-d58fd.appspot.com",
+        messagingSenderId: "1023421408848",
+        appId: "1:1023421408848:web:efdae9407336d1d6b55355",
+        measurementId: "G-S4KPNYZ8YB"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const adminLoginForm = document.getElementById('adminLoginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+        
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loginBtn.innerHTML = '<span class="loading"></span>Logging in...';
+                loginBtn.disabled = true;
+            } else {
+                loginBtn.innerHTML = 'Login';
+                loginBtn.disabled = false;
+            }
+        }
+        
+        adminLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Get form values
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            setLoading(true);
+            
+            try {
+                // Send admin login request to backend
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Login failed');
+                }
+                
+                const data = await response.json();
+                
+                // Store token
+                localStorage.setItem('admin_token', data.token);
+                
+                showSuccess('Admin login successful! Redirecting...');
+                
+                // Redirect to admin dashboard
+                setTimeout(() => {
+                    window.location.href = '/admin-dashboard';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError(error.message || 'Login failed. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        });
+    });
+  </script>
+</body>
+</html>

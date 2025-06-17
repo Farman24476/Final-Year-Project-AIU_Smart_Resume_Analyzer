@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AIU Resume Analyzer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+    /* Only adding minimal styles for error/success messages */
+    .error-message, .success-message {
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 14px;
+      display: none;
+    }
+
+    .error-message {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      color: #ff6b6b;
+    }
+
+    .success-message {
+      background: rgba(0, 255, 0, 0.1);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+      color: #4caf50;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 5px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .register-login {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .register-login p {
+      color: #fff;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+
+    .register-login a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .register-login a:hover {
+      text-decoration: underline;
+    }
+
+    .admin-login {
+      text-align: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .admin-login a {
+      color: #4CAF50;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .admin-login a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body> 
+  <header class="site-header">
+    <img src="/static/logo.png" alt="logo" class="header-logo" >
+    <h2>AIU Smart Resume Analyzer</h2>
+  </header> 
+
+        <div class="wrapper">
+    <form id="loginForm">
+      <h1>Login</h1>
+      
+      <div id="errorMessage" class="error-message"></div>
+      <div id="successMessage" class="success-message"></div>
+      
+      <div class="input-box">
+        <input 
+          type="email" 
+          id="email"
+          placeholder="Email Address" 
+          required 
+          pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+          title="Please enter a valid email address (e.g., user@example.com)"
+        >
+        <i class='bx bxs-envelope'></i>
+      </div>
+      <div class="input-box">
+        <input 
+          type="password" 
+          id="password"
+          placeholder="Password" 
+          required
+          minlength="8"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
+          title="Must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number"
+        >
+        <i class='bx bxs-lock-alt'></i>
+      </div>
+      <div class="remember-forgot">
+        <label><input type="checkbox" id="rememberMe">Remember Me</label>
+        <a href="/forgot-password" id="forgotPasswordLink">Forgot Password</a>
+      </div>
+      <button type="submit" class="btn" id="loginBtn">Login</button>
+      
+      <div class="register-login">
+        <p>Don't have an account? <a href="/register">Register here</a></p>
+      </div>
+      
+      <div class="admin-login">
+        <a href="/admin-login"><i class='bx bxs-shield'></i> Admin Login</a>
+      </div>
+    </form>
+  </div>
+
+  <footer class="site-footer">
+    <p>&copy; DEVELOPED BY SCHOOL OF COMPUTING AND INFORMATICS</p>
+  </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+                
+                // Show loading state
+                const loginBtn = document.getElementById('loginBtn');
+                const originalBtnText = loginBtn.innerHTML;
+                loginBtn.innerHTML = '<span class="loading"></span> Logging in...';
+                loginBtn.disabled = true;
+                
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password, rememberMe })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(result.detail || 'Login failed');
+                    }
+                    
+                    // Store token (if rememberMe, use localStorage, else sessionStorage)
+                    if (rememberMe) {
+                        localStorage.setItem('authToken', result.token);
+                    } else {
+                        sessionStorage.setItem('authToken', result.token);
+                    }
+                    
+                    // Redirect to resume upload page
+                    window.location.href = '/resume-upload';
+                } catch (error) {
+                    console.error("Login error:", error);
+                    const errorMessage = document.getElementById('errorMessage');
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                    loginBtn.innerHTML = originalBtnText;
+                    loginBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

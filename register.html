@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIU Smart Resume Analyzer - Register</title>
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <style>
+    .error-message, .success-message {
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 14px;
+      display: none;
+    }
+
+    .error-message {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      color: #ff6b6b;
+    }
+
+    .success-message {
+      background: rgba(0, 255, 0, 0.1);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+      color: #4caf50;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 5px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .login-register {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .login-register p {
+      color: #fff;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+
+    .login-register a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-register a:hover {
+      text-decoration: underline;
+    }
+
+    .password-requirements {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 5px;
+      text-align: left;
+    }
+
+    .input-box {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .phone-format {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 5px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <img src="/static/logo.png" alt="logo" class="header-logo">
+    <h2>AIU Smart Resume Analyzer</h2>
+  </header>
+  
+  <div class="wrapper">
+    <div class="form-container">
+      <h1>Create Account</h1>
+      
+      <div id="errorMessage" class="error-message"></div>
+      <div id="successMessage" class="success-message"></div>
+      
+      <form id="registerForm">
+        <div class="input-group">
+          <label for="fullName">Full Name</label>
+          <div class="input-box">
+            <i class='bx bxs-user'></i>
+            <input type="text" id="fullName" placeholder="Enter your full name" required>
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label for="email">Email Address</label>
+          <div class="input-box">
+            <i class='bx bxs-envelope'></i>
+            <input type="email" id="email" placeholder="Enter your email" required>
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label for="phone">Phone Number</label>
+          <div class="input-box">
+            <i class='bx bxs-phone'></i>
+            <input type="tel" id="phone" placeholder="+1234567890" required>
+          </div>
+          <span class="phone-format">Include country code (e.g. +1 for US)</span>
+        </div>
+        
+        <div class="input-group">
+          <label for="password">Password</label>
+          <div class="input-box">
+            <i class='bx bxs-lock-alt'></i>
+            <input type="password" id="password" placeholder="Create a password" required minlength="6">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="input-box">
+            <i class='bx bxs-lock-alt'></i>
+            <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+          </div>
+        </div>
+        
+        <div class="terms">
+          <input type="checkbox" id="agreeTerms" required>
+          <label for="agreeTerms">I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+        
+        <button type="submit" class="btn" id="registerBtn">Register</button>
+      </form>
+      
+      <div class="login-link">
+        <p>Already have an account? <a href="/">Login here</a></p>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="site-footer">
+    <p>&copy; DEVELOPED BY SCHOOL OF COMPUTING AND INFORMATICS</p>
+  </footer>
+
+  <script>
+    const registerForm = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+      successMessage.style.display = 'none';
+    }
+    
+    function showSuccess(message) {
+      successMessage.textContent = message;
+      successMessage.style.display = 'block';
+      errorMessage.style.display = 'none';
+    }
+    
+    function setLoading(isLoading) {
+      if (isLoading) {
+        registerBtn.innerHTML = '<span class="loading"></span>Creating account...';
+        registerBtn.disabled = true;
+      } else {
+        registerBtn.innerHTML = 'Register';
+        registerBtn.disabled = false;
+      }
+    }
+    
+    function validatePhone(phone) {
+      // Simple validation for international phone numbers
+      return /^\+[1-9]\d{1,14}$/.test(phone);
+    }
+
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Get form values
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      // Simple validation
+      if (password !== confirmPassword) {
+        showError('Passwords do not match');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters');
+        return;
+      }
+      
+      if (!validatePhone(phone)) {
+        showError('Please enter a valid phone number with country code (e.g. +1234567890)');
+        return;
+      }
+      
+      setLoading(true);
+      
+      try {
+        // Send registration request to backend
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            full_name: fullName,
+            email: email,
+            password: password,
+            confirm_password: confirmPassword,
+            phone: phone,
+            agree_terms: true
+          })
+        });
+        
+        const responseData = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(responseData.detail || 'Registration failed');
+        }
+        
+        // Store token
+        localStorage.setItem('token', responseData.token);
+        
+        showSuccess('Account created successfully! Redirecting...');
+        
+        // Redirect to resume upload
+        setTimeout(() => {
+          window.location.href = '/resume-upload';
+        }, 1500);
+        
+      } catch (error) {
+        showError(error.message || 'Registration failed. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
