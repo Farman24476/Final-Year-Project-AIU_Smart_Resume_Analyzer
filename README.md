@@ -38,10 +38,4 @@ An intelligent resume screening system built as a Final Year Project (FYP) at Al
 | Career Tools             | Provide training suggestions & interview prep                               |
 | AIU Portal Integration   | Embed system into AIU official student website                              |
 
-## 📄 Report & Docs
-
-- [📘 Final Report (Google Drive)](https://drive.google.com/file/d/11qzq3kd6OSdkG0Rt6EhU-S6GGGarYsHx/view?usp=sharing)
-
----
-
 © 2025 AIU Final Year Project Team – Farman Ali, Tawfiq Taib Yassen, Abdelrahman M.K. Abualhana
