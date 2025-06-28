@@ -1,5 +1,7 @@
 # AIU Smart Resume Analyzer
 
+**Live Project:** [aiu-smart-resume-analyzer.up.railway.app](https://aiu-smart-resume-analyzer.up.railway.app/)
+
 The AIU Smart Resume Analyzer is a next-generation web-based application designed to modernize and streamline the résumé screening process using Artificial Intelligence (AI) and Natural Language Processing (NLP). This project addresses the inefficiencies, biases, and inconsistencies inherent in traditional hiring workflows, especially within academic and entry-level recruitment contexts.
 
 By combining advanced NLP techniques with secure authentication and an Applicant Tracking System (ATS) scoring engine, the system enables accurate résumé parsing, job-candidate matching, and skill-gap identification. A role-based, user-friendly dashboard provides actionable insights to both administrators and applicants. Experimental results demonstrate that the platform significantly improves decision-making, enhances fairness, and reduces manual review time.
