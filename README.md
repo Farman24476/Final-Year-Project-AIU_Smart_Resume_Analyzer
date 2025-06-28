@@ -1,7 +1,5 @@
 # AIU Smart Resume Analyzer 🎯
 
-An intelligent resume screening system built as a Final Year Project (FYP) at Albukhary International University (AIU). It uses Natural Language Processing (NLP), ATS scoring, and secure login to modernize hiring and help students improve their resumes.
-
 The AIU Smart Resume Analyzer project intends to transform the traditional
 resume screening process by employing modern Artificial Intelligence (AI)
 technology. The primary project objectives are to create and implement a system that
