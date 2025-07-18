@@ -90,7 +90,7 @@ The AIU Smart Resume Analyzer offers a scalable, secure, and intelligent alterna
 This project was developed as part of the 2025 Final Year Capstone at Albukhary International University (AIU), under the supervision of academic faculty from the School of Computing and Informatics.
 
 **Project Team**  
-- Md Farman Ali  
+- Md Farman Ali (Team Leader) 
 - Tawfiq Taib Yassen  
 - Abdelrahman M. K. Abualhana  
 
